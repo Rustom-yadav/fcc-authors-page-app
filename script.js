@@ -5,14 +5,18 @@ let startingIndex = 0;
 let endingIndex = 8;
 let authorDataArr = [];
 
+const setButtonToLoadMore = () => {
+  loadMoreBtn.textContent = 'Load More Authors';
+};
+
 fetch('https://cdn.freecodecamp.org/curriculum/news-author-page/authors.json')
   .then((res) => res.json())
   .then((data) => {
     authorDataArr = data;
-    displayAuthors(authorDataArr.slice(startingIndex, endingIndex));  
+    displayAuthors(authorDataArr.slice(startingIndex, endingIndex));
   })
   .catch((err) => {
-   authorContainer.innerHTML = '<p class="error-msg">There was an error loading the authors</p>';
+    authorContainer.innerHTML = '<p class="error-msg">There was an error loading the authors</p>';
   });
 
 const fetchMoreAuthors = () => {
@@ -21,9 +25,24 @@ const fetchMoreAuthors = () => {
 
   displayAuthors(authorDataArr.slice(startingIndex, endingIndex));
   if (authorDataArr.length <= endingIndex) {
-    loadMoreBtn.disabled = true;
-    loadMoreBtn.style.cursor = "not-allowed";
-    loadMoreBtn.textContent = 'No more data to load';
+    loadMoreBtn.textContent = 'Start from beginning';
+  }
+};
+
+const resetAuthors = () => {
+  if (!authorDataArr.length) return;
+  startingIndex = 0;
+  endingIndex = 8;
+  authorContainer.innerHTML = '';
+  displayAuthors(authorDataArr.slice(startingIndex, endingIndex));
+  setButtonToLoadMore();
+};
+
+const onLoadMoreClick = () => {
+  if (authorDataArr.length <= endingIndex) {
+    resetAuthors();
+  } else {
+    fetchMoreAuthors();
   }
 };
 
@@ -41,4 +60,4 @@ const displayAuthors = (authors) => {
   });
 };
 
-loadMoreBtn.addEventListener('click', fetchMoreAuthors);
+loadMoreBtn.addEventListener('click', onLoadMoreClick);
